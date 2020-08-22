@@ -39,7 +39,7 @@ python main.py
 ## Additional information
 You have to change Group ID. For it change variable group_id in **main()** function:
 ```
-group_id = yout_group_ID
+group_id = your_group_ID
 ```
 
 * How to get Access token [vk.com](https://vk.com/apps?act=manage):
