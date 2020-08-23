@@ -37,10 +37,10 @@ def save_wall_photo(vk_token, group_id, response_get_wall_upload_server):
                'photo': photo,
                'server': server,
                'hash': hash_photo}
-    response = requests.post(url, params=payload).json()['response']
+    response = requests.post(url, params=payload)
     response.raise_for_status()
 
-    return response
+    return response.json()['response']
 
 
 def get_wall_upload_server(vk_token, group_id):
@@ -58,10 +58,10 @@ def get_wall_upload_server(vk_token, group_id):
         files = {
             'photo': file
         }
-        response = requests.post(upload_url, files=files).json()
+        response = requests.post(upload_url, files=files)
         response.raise_for_status()
 
-        return response
+        return response.json()
 
 
 def download_comic(url):
@@ -101,7 +101,7 @@ def main():
     message = get_comic_pic_and_message()
 
     post_comic(vk_token, group_id, message,
-               save_wall_photo(vk_token, group_id, 
+               save_wall_photo(vk_token, group_id,
                                get_wall_upload_server(vk_token, group_id)))
 
 
