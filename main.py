@@ -3,7 +3,8 @@ from dotenv import load_dotenv
 import os
 
 
-def wall_post(payload, message, response_save_wall_photo):
+def post_comic(vk_token, group_id, message, response_save_wall_photo):
+
     url = 'https://api.vk.com/method/wall.post'
 
     owner_id = response_save_wall_photo[0]['owner_id']
@@ -11,30 +12,44 @@ def wall_post(payload, message, response_save_wall_photo):
     message = message
     media_id = response_save_wall_photo[0]['id']
 
-    payload.update({'message': message,
-                    'from_group': from_group,
-                    'attachments': f'photo{owner_id}_{media_id}',
-                    'owner_id': -(payload['group_id'])})
+    payload = {'access_token': vk_token,
+               'v': '5.122',
+               'group_id': group_id,
+               'message': message,
+               'from_group': from_group,
+               'attachments': f'photo{owner_id}_{media_id}',
+               'owner_id': -group_id}
 
-    requests.get(url, params=payload)
+    response = requests.get(url, params=payload)
+    response.raise_for_status()
 
 
-def save_wall_photo(payload, response_get_wall_upload_server):
+def save_wall_photo(vk_token, group_id, response_get_wall_upload_server):
+
     url = 'https://api.vk.com/method/photos.saveWallPhoto'
-
     photo = response_get_wall_upload_server['photo']
     server = response_get_wall_upload_server['server']
     hash_photo = response_get_wall_upload_server['hash']
 
-    payload.update({'photo': photo,
-                    'server': server,
-                    'hash': hash_photo})
+    payload = {'access_token': vk_token,
+               'v': '5.122',
+               'group_id': group_id,
+               'photo': photo,
+               'server': server,
+               'hash': hash_photo}
+    response = requests.post(url, params=payload).json()['response']
+    response.raise_for_status()
 
-    return requests.post(url, params=payload).json()['response']
+    return response
 
 
-def get_wall_upload_server(payload):
+def get_wall_upload_server(vk_token, group_id):
+    payload = {'access_token': vk_token,
+               'v': '5.122',
+               'group_id': group_id}
+
     url = 'https://api.vk.com/method/photos.getWallUploadServer'
+
     response = requests.get(url, params=payload).json()
 
     upload_url = response['response']['upload_url']
@@ -43,7 +58,10 @@ def get_wall_upload_server(payload):
         files = {
             'photo': file
         }
-        return requests.post(upload_url, files=files).json()
+        response = requests.post(upload_url, files=files).json()
+        response.raise_for_status()
+
+        return response
 
 
 def download_comic(url):
@@ -66,27 +84,25 @@ def get_random_comic():
 def get_comic_pic_and_message():
     response = requests.get(get_random_comic() + 'info.0.json')
     response.raise_for_status()
-    response_json = response.json()
+    response_xkcd = response.json()
 
-    download_comic(response_json['img'])
+    download_comic(response_xkcd['img'])
 
-    return response_json['alt']
+    return response_xkcd['alt']
 
 
 def main():
     load_dotenv()
 
-    vk_access_token = os.getenv('VK_ACCESS_TOKEN')
+    vk_token = os.getenv('VK_ACCESS_TOKEN')
 
     group_id = 198053823
 
-    payload = {'access_token': vk_access_token,
-               'v': '5.122',
-               'group_id': group_id}
-
     message = get_comic_pic_and_message()
 
-    wall_post(payload, message, save_wall_photo(payload, get_wall_upload_server(payload)))
+    post_comic(vk_token, group_id, message,
+               save_wall_photo(vk_token, group_id, 
+                               get_wall_upload_server(vk_token, group_id)))
 
 
 if __name__ == '__main__':
