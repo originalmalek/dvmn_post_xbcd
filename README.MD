@@ -1,12 +1,12 @@
 # Post comics XKCD to VK.com automatically 
-The project post comics XKCD to VK.com automatically. 
+The project posts comics XKCD to VK.com automatically. 
 
 
 ## Description
 The code: 
-Download random comic from [XKCD](https://xkcd.com/) and post the comic to [VK.com](https://vk.com) public automatically using API.
+Downloads random comic from [XKCD](https://xkcd.com/) and posts the comic to [VK.com](https://vk.com) public automatically using API.
 
-* The project use:  
+* The project uses:  
   * [XKCD API](https://xkcd.com/json.html);  
   * [VK API](https://vk.com/dev).
   
@@ -44,7 +44,7 @@ group_id = your_group_ID
 
 * How to get Access token [vk.com](https://vk.com/apps?act=manage):
   * Use [Implicit Flow](https://vk.com/dev/implicit_flow_user) procedure
-  * Delete **redirect_url** from url
+  * Delete **redirect_url** parameter from url
   * In scope parameters enter scope=photos,groups
 
 * How to create [vk.com](https://vk.com/apps?act=manage) app:
