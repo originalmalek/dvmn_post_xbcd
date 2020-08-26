@@ -69,7 +69,6 @@ def post_comic(vk_token, group_id, message):
     check_error_response_vk(response)
 
 
-
 def download_comic(url):
     pic_name = 'comic.png'
 
