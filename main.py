@@ -3,6 +3,11 @@ from dotenv import load_dotenv
 import os
 
 
+def check_error_response_vk(response):
+    if 'error' in response:
+        raise requests.exceptions.HTTPError(response['error'])
+
+
 def get_wall_upload_server(vk_token, group_id):
     payload = {'access_token': vk_token,
                'v': '5.122',
@@ -11,8 +16,7 @@ def get_wall_upload_server(vk_token, group_id):
     url = 'https://api.vk.com/method/photos.getWallUploadServer'
 
     response = requests.get(url, params=payload).json()
-    if 'error' in response:
-        raise requests.exceptions.HTTPError(response['error'])
+    check_error_response_vk(response)
 
     upload_url = response['response']['upload_url']
 
@@ -20,8 +24,7 @@ def get_wall_upload_server(vk_token, group_id):
         files = {'photo': file}
 
         response_upload_photo = requests.post(upload_url, files=files).json()
-        if 'error' in response_upload_photo:
-            raise requests.exceptions.HTTPError(response_upload_photo['error'])
+        check_error_response_vk(response_upload_photo)
         return response_upload_photo
 
 
@@ -40,8 +43,7 @@ def save_wall_photo(vk_token, group_id):
                'hash': hash_photo}
 
     response = requests.post(url, params=payload).json()
-    if 'error' in response:
-        raise requests.exceptions.HTTPError(response['error'])
+    check_error_response_vk(response)
 
     return response['response']
 
@@ -64,8 +66,7 @@ def post_comic(vk_token, group_id, message):
                'owner_id': -group_id}
 
     response = requests.get(url, params=payload).json()
-    if 'error' in response:
-        raise requests.exceptions.HTTPError(response['error'])
+    check_error_response_vk(response)
 
 
 
